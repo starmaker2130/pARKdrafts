@@ -1,0 +1,236 @@
+* {
+    font-family: 'Proxima Nova', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body, html{
+    width: 100%;
+    height: 100%;
+}
+
+#main-app-container{
+    width: 100%;
+    height: 100%;
+    background-color: yellow;
+    color: black;
+}
+
+.step-container{
+    display: none;
+    opacity: 0;
+}
+
+.step-0-container, .step-1-container, .step-2-container{
+    width: 400px;
+    height: 300px;
+    border: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -150px 0 0 -200px;
+}
+
+.step-3-container, .step-4-container, .step-5-container{
+    width: 400px;
+    height: 400px;
+    border: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -200px 0 0 -200px;
+}
+
+#phone-option-container, #connect-phone-button-container, #food-option-container, #payment-option-container{
+    width: 100%;
+    height: 90%;
+    margin-top: 5%;
+    font-size: 0;
+}
+
+.phone-option-button:hover, .food-option-button:hover{
+    border: 3px black solid;
+    border-radius: 15px;
+}
+
+.phone-option-button, .food-option-button{
+    color: white;
+    font-size: 16px;
+    display: inline-block;
+    width: 49%;
+    height: 100%;
+    text-align: center;
+    background-size: 50% 40%;
+    background-position: center center;
+    background-repeat: no-repeat;
+    line-height: 300px;
+    cursor: pointer;
+}
+
+.food-option-button{
+    color: black;
+    font-size: 16px;
+    display: inline-block;
+    width: 49%;
+    height: 100%;
+    text-align: center;
+    background-size: 60% 50%;
+    background-position: center top;
+    background-repeat: no-repeat;
+    line-height: 350px;
+    vertical-align: bottom;
+    cursor: pointer;
+}
+
+.connect-phone-button, .payment-form-container{
+    display: none;
+}
+
+.show-this-connector{
+    color: black;
+    font-size: 16px;
+    display: inline-block !important;
+    width: 100%;
+    height: 50px;
+    text-align: center;
+    background-size: 60% 50%;
+    line-height: 45px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.show-this-connector:hover{
+    color: white;
+    background-color: black;
+    text-transform: uppercase;
+}
+
+.show-this-form{
+    color: black;
+    font-size: 16px;
+    display: inline-block !important;
+}
+
+#iphone-option-button{
+    background-image: url('../media/img/apple-logo.png');
+}
+
+#android-option-button{
+    background-image: url('../media/img/android-logo.png');
+}
+
+#chips-option-button{
+    background-image: url('../media/img/chips.png');
+}
+
+#backwoods-option-button{
+    background-image: url('../media/img/backwoods.png');
+}
+
+#phone-type-header{
+    text-align: center;
+}
+
+.payment-option-button{
+    width: 80%;
+    height: 50px;
+    border-radius: 10px;
+    text-align: center;
+    line-height: 50px;
+    margin: 2% auto;
+    display: block;
+    font-size: 16px;
+    background-size: auto 100%;
+    background-color: white;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.payment-option-button:hover{
+    background-color: black;
+    color: white;
+}
+
+#bank-option-button{
+    background-image: url('../media/img/bank-card.png');
+}
+
+#hov-option-button{
+    background-image: url('../media/img/hov-md.png');
+}
+
+#google-option-button{
+    background-image: url('../media/img/google-pay.png');
+}
+
+#apple-option-button{
+    background-image: url('../media/img/apple-pay.png');
+}
+
+#paypal-option-button{
+    background-image: url('../media/img/paypal.png');
+}
+
+
+#payment-form-class-container{
+    
+}
+
+.payment-form-container{
+    
+}
+
+#bank-option-form{
+    margin: 2% auto;
+    width: 350px;
+    height: 250px;
+    border: 2px white solid;
+    border-radius: 15px;
+    background-color: white;
+    color: black;
+}
+
+#bank-card-name, #bank-card-number{
+    width: 90%;
+    display: block;
+    margin: 5% auto;
+    height: 35px;
+    border-radius: 10px;
+}
+
+#bank-card-expiration-date{
+    display: inline-block;
+    width: 37%;
+    height: 35px;
+    margin: 0 5%;
+    border-radius: 10px;
+}
+
+#bank-card-cvv{
+    width: 37%;
+    height: 35px;
+    margin: 0 5%;
+    border-radius: 10px;
+}
+
+#hov-option-form{
+    
+}
+
+#google-option-form{
+    
+}
+
+#apple-option-form{
+    
+}
+
+#bank-login, #paypal-login, #google-login, #apple-login, #submit-order-button{
+    display: block;
+    width: 150px;
+    height: 50px;
+    line-height: 50px;
+    background-color: white;
+    border-radius: 10px;
+    margin: 2% auto; 
+}
