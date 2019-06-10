@@ -82,6 +82,16 @@ body, html{
     cursor: pointer;
 }
 
+.connect-phone-button{
+    border: 2px white solid;
+    background-color: white;
+    width: 150px;
+    line-height: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+
 .connect-phone-button, .payment-form-container{
     display: none;
 }
@@ -89,14 +99,10 @@ body, html{
 .show-this-connector{
     color: black;
     font-size: 16px;
-    display: inline-block !important;
-    width: 100%;
-    height: 50px;
+    display: block !important;
     text-align: center;
     background-size: 60% 50%;
-    line-height: 45px;
     cursor: pointer;
-    border-radius: 10px;
 }
 
 .show-this-connector:hover{
@@ -108,7 +114,7 @@ body, html{
 .show-this-form{
     color: black;
     font-size: 16px;
-    display: inline-block !important;
+    display: block !important;
 }
 
 #iphone-option-button{
@@ -171,15 +177,6 @@ body, html{
     background-image: url('../media/img/paypal.png');
 }
 
-
-#payment-form-class-container{
-    
-}
-
-.payment-form-container{
-    
-}
-
 #bank-option-form{
     margin: 2% auto;
     width: 350px;
@@ -195,7 +192,12 @@ body, html{
     display: block;
     margin: 5% auto;
     height: 35px;
-    border-radius: 10px;
+    border-radius: 5px;
+}
+
+#bank-login{
+    color: white;
+    background-color: black;
 }
 
 #bank-card-expiration-date{
@@ -214,7 +216,7 @@ body, html{
 }
 
 #hov-option-form{
-    
+    text-align: center;
 }
 
 #google-option-form{
@@ -225,7 +227,11 @@ body, html{
     
 }
 
-#bank-login, #paypal-login, #google-login, #apple-login, #submit-order-button{
+.login-button:focus, #submit-order-button:focus{
+    outline: none;
+}
+
+.login-button, #submit-order-button{
     display: block;
     width: 150px;
     height: 50px;
@@ -233,4 +239,124 @@ body, html{
     background-color: white;
     border-radius: 10px;
     margin: 2% auto; 
+}
+
+@media only screen and (max-width: 360px){
+    .step-0-container, .step-1-container, .step-2-container{
+        width: 100%;
+        height: 100%;
+        border: 0;
+        position: relative;
+        top: auto;
+        left: auto;
+        margin: 0;
+    }
+    
+    #phone-type-header{
+        text-align: center;
+        line-height: 50px;
+    }
+
+    #phone-option-container, #connect-phone-button-container, #food-option-container, #payment-option-container{
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 90%;
+        font-size: 0;
+    }
+    
+    .phone-option-button:hover, .food-option-button:hover{
+        border: 0;
+        border-radius: 15px;
+    }
+
+    .phone-option-button, .food-option-button{
+        color: white;
+        font-size: 16px;
+        display: inline-block;
+        width: 100%;
+        height: 49%;
+        text-align: center;
+        background-size: 50% 60%;
+        background-position: center center;
+        background-repeat: no-repeat;
+        line-height: 300px;
+        cursor: pointer;
+    }
+    
+    .connect-phone-button{
+        border: 2px white solid;
+        background-color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin: -75px 0 0 -75px;
+        font-size: 24px;
+    }
+    
+    #bank-option-form{
+        padding-top: 10%;
+        margin: 2% auto 0 10%;
+        width: 80%;
+        height: 75%;
+        border: 0;
+        border-radius: 0;
+        background-color: white;
+        color: black;
+    }
+    
+    .step-4-container{
+        width: 100%;
+        height: 80%;
+        top: 10%;
+        position: absolute;
+        border: 0;
+        left: auto;
+        margin: auto;
+    }
+    
+    #payment-form-class-container{
+        width: 100%;
+        height: 100%;
+    }
+    
+    .login-button, #submit-order-button{
+        display: block;
+        width: 150px;
+        height: 150px;
+        line-height: 150px;
+        background-color: white;
+        border-radius: 50%;
+        margin: 10% auto; 
+        font-size: 24px;
+    }
+    
+    #bank-card-name, #bank-card-number{
+        height: 75px;
+        font-size: 20px;
+        border-radius: 5px;
+    }
+
+    #bank-login{
+        color: white;
+        background-color: black;
+    }
+
+    #bank-card-expiration-date{
+        height: 45px;
+    }
+
+    #bank-card-cvv{
+        height: 45px;
+    }
+}
+
+.noselect {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

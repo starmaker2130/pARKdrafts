@@ -46,6 +46,14 @@ app.instance.get('/', function(req, res){
     res.render('index.html', {root: app.config.DIRECTORY[0]});
 });
 
+app.instance.get('/receipt', function(req, res){
+    res.render('receipt.html', {root: app.config.DIRECTORY[0]});
+});
+
+app.instance.get('/track', function(req, res){
+    res.render('trackdelivery.html', {root: app.config.DIRECTORY[0]});
+});
+
 app.instance.get('/css/:stylesheet_id', function(req, res){
     let stylesheetId = req.params.stylesheet_id;
     res.sendFile(stylesheetId, {root: app.config.DIRECTORY[1]});
@@ -75,12 +83,70 @@ var io = require('socket.io').listen(app.instance.listen(app.config.PORT, functi
     console.log(`[0] listening on port ${app.config.PORT}`);
 }));
 
-var subjects = [];
+var subjects = {};
+var history = [];
 
 io.on('connection', function(socket){
     console.log(`socket ${socket.id} connected`);
     
+    socket.on('retrieveAssociatedOrder', function(data){
+        let timein = data.time;
+        console.log(`--------------------- \nretrieve order request at ${timein}`);
+        
+        for(var i=0; i<history.length; i++){
+            isThisYourOrder(i, timein);
+        }
+    });
+    
+    function isThisYourOrder(item, timein){
+        let curr = history[item].time;
+        let diff = Math.abs(curr-timein);
+        console.log(diff);
+        if(diff<1000){
+            console.log('found your order');
+            socket.emit('loadAssociatedOrder', {order: history[item].order});
+        }
+    }
+    
+    socket.on('validateConnection', function(data){
+        //let curr = Object.keys(subjects).length;
+        let currID = socket.id;
+        console.log(`user connected to dlt: ${data.status} at ${data.time}`);
+        
+        subjects[currID] = {
+            id: currID,
+            status: data.status,
+            time: data.time,
+            page: 0
+        };
+        console.log(`------------------------`);
+        console.log(subjects[currID]);
+        
+        socket.emit('connectionValidated', {status: true, time: new Date()});
+    });
+    
+    socket.on('moveToPage', function(data){
+        subjects[socket.id].page = data.page;
+        console.log(`${subjects[socket.id].id} now on page ${subjects[socket.id].page}`);
+        socket.emit('pageChangeAcknowledged', {status: true, time: new Date()});
+    });
+    
+    socket.on('submitOrder', function(data){
+        subjects[socket.id].order = data;
+        let user = subjects[socket.id];
+
+        console.log(`----------------- \n order complete for ${user.id} at \n latitude ${user.order.location.lat} \n longitude ${user.order.location.long} \n with accuracy ${user.order.location.accuracy} \n -------------- \n items: ${user.order.cart} \n payment method: ${user.order.paidWith} \n -----------------`);
+        
+        let timeout = (new Date()).getTime();
+        history.push({time: timeout, order: user.order});
+        socket.emit('orderReceived', {status: true, time: timeout});
+    });
+            
     socket.on('disconnect', function(data){
-        console.log(`${socket.id} disconnected`);
+        let prev = Object.keys(subjects).length;
+        delete subjects[socket.id];
+        let curr = Object.keys(subjects).length;
+        
+        console.log(`prev: ${prev} | curr: ${curr} | ${socket.id} disconnected`);
     });
 });

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name = "viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset='utf-8' />
+    <link rel="apple-touch-icon" sizes="57x57" href="../media/icon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../media/icon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../media/icon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="../media/icon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="../media/icon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="../media/icon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../media/icon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../media/icon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../media/icon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="../media/icon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../media/icon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../media/icon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../media/icon/favicon-16x16.png">
+    <link rel="manifest" href="../media/icon/manifest.json">
+    <link rel="stylesheet" href="../css/receipt.css" type="text/css" />
+    <title>receipt</title>    
+    <script src='../js/jquery-3.2.1.min.js'></script>
+    <script src='../js/socket.io.js'></script>
+    <script>
+        var order = {
+            connection: null,
+            content: null
+        };
+        
+        document.addEventListener('DOMContentLoaded', function(){
+            order.connection = io.connect(location.host);
+            order.connection.emit('retrieveAssociatedOrder', {status: true, time: (new Date()).getTime()});
+            
+            order.connection.on('loadAssociatedOrder', function(data){
+                console.log(data);
+                order.content = data.order;
+                
+                console.log(order.content);
+                
+                $('#delivery-item').append(order.content.cart);
+                $('#delivery-latitude').append(`<p>${order.content.location.lat}</p>`);
+                $('#delivery-longitude').append(`<p>${order.content.location.long}</p>`);
+                $('#delivery-location-accuracy').append(`<p>${order.content.location.accuracy}</p>`);
+            });
+            
+            $('#track-your-delivery').click(function(){
+                window.location.href = './track';
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id='receipt-container'>
+        <div id='receipt-header-company' class='receipt-header'>
+            House of Venus, Benefit Corporation
+        </div>
+        <div id='receipt-header-address' class='receipt-header'>
+            Colesville, Silver Spring, MD
+        </div>
+        <div id='receipt-header-thanks' class='receipt-header'>
+            Your order has been received!
+        </div>
+        <div id='delivery-item'>
+        </div>
+        <div id='delivery-location'>
+            <div id='delivery-latitude' class='delivery-location-section'>
+            </div>
+            <div id='delivery-longitude' class='delivery-location-section'>
+            </div>
+            <div id='delivery-location-accuracy' class='delivery-location-section'>
+            </div>
+        </div>
+        <input id='track-your-delivery' value='track' type='button' />
+    </div>
+    
+</body>
+</html>

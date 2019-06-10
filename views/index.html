@@ -17,77 +17,123 @@
     <link rel="icon" type="image/png" sizes="16x16" href="../media/icon/favicon-16x16.png">
     <link rel="manifest" href="../media/icon/manifest.json">
     <link rel="stylesheet" href="../css/main.css" type="text/css" />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
     <title>Delivery</title>
     <script src='../js/jquery-3.2.1.min.js'></script>
+    <script src='../js/socket.io.js'></script>
     <script>
         
         var sm = {
             onPage: 0,
+            deviceType: null,
             cart: null,
+            paymentOption: null,
+            connection: null,
+            location: null
         };
         
-        document.addEventListener('DOMContentLoaded', function(){
-            function showStep(num){
-                var dict = [
-                    '#select-phone-type-container',
-                    '#connect-phone-container',
-                    '#select-food-container',
-                    '#select-payment-option-container',
-                    '#complete-payment-form-container',
-                    '#submit-order-container'
-                ];
-                
-                $('.step-container').animate({
-                    opacity: 0
-                }, 500, function(){
-                    $(this).hide();
+        function getPosition(){
+            if(navigator.geolocation){
+                navigator.geolocation.getCurrentPosition(function(pos){
+                    sm.location = {};
+                    sm.location.lat = pos.coords.latitude;
+                    sm.location.long = pos.coords.longitude;
+                    sm.location.accuracy = pos.coords.accuracy;
+                    console.log(sm.location);
+                }, function(){
+                    console.log('no geolocation object availebl; position cannot be found')
                 });
-                
+            }
+            
+        }
+        
+        function showStep(num){
+            var dict = [
+                '#select-phone-type-container',
+                '#connect-phone-container',
+                '#select-food-container',
+                '#select-payment-option-container',
+                '#complete-payment-form-container',
+                '#submit-order-container'
+            ];
+
+            $('.step-container').animate({
+                opacity: 0
+            }, 500, function(){
+                $(this).hide();
+            });
+
+            setTimeout(function(){
+                $(dict[num]).show().animate({
+                    opacity: 1.0
+                });
+            }, 550);
+
+        }
+
+        function getID(element){
+            let rawID = element.attr('id');
+            let id = rawID.substring(0, rawID.indexOf('-'));
+            return id;
+        }
+
+        function nextPage(){
+            sm.onPage++;
+            sm.connection.emit('moveToPage', {page: sm.onPage});
+            showStep(sm.onPage);
+        }
+
+        function showConnectionStep(option){
+            let connector = '#connect-'+option+'-button';
+            
+            sm.deviceType = option;
+            console.log(sm.deviceType);
+            
+            nextPage();
+
+            setTimeout(function(){
+                $(connector).addClass('show-this-connector');
+                $(connector).click(function(){
+                     nextPage();
+                });
+            }, 600)
+        }
+
+        function showPaymentStep(option){
+            let paymentSystem = '#'+option+'-option-form';
+            let paymentLogin = '#'+option+'-login';
+            console.log(option);
+            
+            sm.paymentOption = option;
+            nextPage();
+
+            setTimeout(function(){
+                $(paymentSystem).addClass('show-this-form');
+                $(paymentLogin).click(function(){
+                     nextPage();
+                });
+            }, 600);
+        }
+        
+        document.addEventListener('DOMContentLoaded', function(){
+            sm.connection = io.connect(location.host);
+            sm.connection.emit('validateConnection', {status: true, time: new Date()});
+            
+            sm.connection.on('connectionValidated', function(data){
+                getPosition();
+                console.log(`connection validated? ${data.status} at ${data.time} \n --------------------------`);
+            });
+            
+            sm.connection.on('pageChangeAcknowledged', function(data){
+                console.log(`page change acknowledged? ${data.status} at ${data.time} \n --------------------------`);
+            });
+            
+            sm.connection.on('orderReceived', function(data){
+                console.log('order Received');
                 setTimeout(function(){
-                    $(dict[num]).show().animate({
-                        opacity: 1.0
-                    });
-                }, 550);
-                
-            }
-            
-            function getID(element){
-                let rawID = element.attr('id');
-                let id = rawID.substring(0, rawID.indexOf('-'));
-                return id;
-            }
-            
-            function nextPage(){
-                sm.onPage++;
-                showStep(sm.onPage);
-            }
-            
-            function showConnectionStep(option){
-                let connector = '#connect-'+option+'-button';
-                console.log(connector);
-                nextPage();
-                
-                setTimeout(function(){
-                    $(connector).addClass('show-this-connector');
-                    $(connector).click(function(){
-                         nextPage();
-                    });
-                }, 600)
-            }
-            
-            function showPaymentStep(option){
-                let paymentSystem = '#'+option+'-option-form';
-                let paymentLogin = '#'+option+'-login';
-                console.log(paymentSystem);
-                nextPage();
-                
-                setTimeout(function(){
-                    $(paymentSystem).addClass('show-this-form');
-                    $(paymentLogin).click(function(){
-                         nextPage();
-                    });
-                }, 600)
-            }
+                    window.location.href= './receipt';
+                }, 500);
+            });
             
             showStep(sm.onPage);
             
@@ -96,14 +142,19 @@
             });
             
             $('.food-option-button').click(function(){
-                nextPage();
                 sm.cart = getID($(this));
                 console.log(sm.cart);
+                nextPage();
                 //showPaymentStep(getID($(this)));
             });
             
             $('.payment-option-button').click(function(){
                 showPaymentStep(getID($(this)));
+            });
+            
+            $('#submit-order-button').click(function(){
+                console.log('submit');
+                sm.connection.emit('submitOrder', {cart: sm.cart, location: sm.location, paidWith: sm.paymentOption});
             });
         });
     </script>
@@ -113,29 +164,29 @@
         <div class='step-container step-0-container' id='select-phone-type-container'>
             <div id='phone-type-header'>select device type</div>
             <div id='phone-option-container'>
-                <div id='iphone-option-button' class='phone-option-button'>iPhone</div>
-                <div id='android-option-button' class='phone-option-button'>Android</div>
+                <div id='iphone-option-button' class='phone-option-button noselect'>iPhone</div>
+                <div id='android-option-button' class='phone-option-button noselect'>Android</div>
             </div>
         </div>
         <div class='step-container step-1-container' id='connect-phone-container'>
             <div id='connect-phone-button-container'>
-                <div id='connect-iphone-button' class='connect-phone-button'>connect</div>
-                <div id='connect-android-button' class='connect-phone-button'>connect</div>
+                <div id='connect-iphone-button' class='connect-phone-button noselect'>connect</div>
+                <div id='connect-android-button' class='connect-phone-button noselect'>connect</div>
             </div>
         </div>
         <div class='step-container step-2-container' id='select-food-container'>
             <div id='food-option-container'>
-                <div id='chips-option-button' class='food-option-button'>Chips</div>
-                <div id='backwoods-option-button' class='food-option-button'>Backwoods</div>
+                <div id='chips-option-button' class='food-option-button noselect'>Chips</div>
+                <div id='backwoods-option-button' class='food-option-button noselect'>Backwoods</div>
             </div>
         </div>
         <div class='step-container step-3-container' id='select-payment-option-container'>
             <div id='payment-option-container'>
-                <div id='bank-option-button' class='payment-option-button'>Bank card</div>
-                <div id='hov-option-button' class='payment-option-button'>HOV cARd</div>
-                <div id='google-option-button' class='payment-option-button'>Google Pay</div>
-                <div id='apple-option-button' class='payment-option-button'>Apple Pay</div>
-                <div id='paypal-option-button' class='payment-option-button'>PayPal</div>
+                <div id='bank-option-button' class='payment-option-button noselect'>Bank card</div>
+                <div id='hov-option-button' class='payment-option-button noselect'>HOV cARd</div>
+                <div id='google-option-button' class='payment-option-button noselect'>Google Pay</div>
+                <div id='apple-option-button' class='payment-option-button noselect'>Apple Pay</div>
+                <div id='paypal-option-button' class='payment-option-button noselect'>PayPal</div>
             </div>
         </div>
         <div class='step-container step-4-container' id='complete-payment-form-container'>
@@ -145,19 +196,20 @@
                     <input type='text' value='' placeholder='0000 1111 2222 3333' id='bank-card-number'/>
                     <input type='text' placeholder='MM/YY' id='bank-card-expiration-date'/>
                     <input type='text' placeholder='CVV' id='bank-card-cvv'/>
-                    <input type='button' value='continue' id='bank-login'/>
+                    <input type='button' value='continue' class='login-button' id='bank-login'/>
                 </div>
                 <div id='hov-option-form' class='payment-form-container'>
                     Tap your phone to your cARd
+                    <input type='button' value='tap to pay' class='login-button' id='hov-login'/>
                 </div>
                 <div id='google-option-form' class='payment-form-container'>
-                    <input type='button' value='tap to connect to google pay' id='google-login'/>
+                    <input type='button' value='google pay' class='login-button' id='google-login'/>
                 </div>
                 <div id='apple-option-form' class='payment-form-container'>
-                    <input type='button' value='tap to connect to apple pay' id='apple-login'/>
+                    <input type='button' value='apple pay' class='login-button' id='apple-login'/>
                 </div>
                 <div id='paypal-option-form' class='payment-form-container'>
-                    <input type='button' value='tap to connect to paypal' id='paypal-login'/>
+                    <input type='button' value='paypal' class='login-button' id='paypal-login'/>
                 </div>
             </div>
         </div>
