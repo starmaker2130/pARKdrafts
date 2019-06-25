@@ -50,7 +50,7 @@ app.instance.get('/receipt', function(req, res){
     res.render('receipt.html', {root: app.config.DIRECTORY[0]});
 });
 
-app.instance.get('/track', function(req, res){
+app.instance.get('/trackq', function(req, res){
     res.render('trackdelivery.html', {root: app.config.DIRECTORY[0]});
 });
 
